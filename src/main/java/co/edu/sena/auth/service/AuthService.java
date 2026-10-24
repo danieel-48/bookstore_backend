@@ -1,6 +1,7 @@
 package co.edu.sena.auth.service;
 
 import co.edu.sena.auth.dto.LoginRequest;
+import co.edu.sena.auth.dto.ProfileResponse;
 import co.edu.sena.auth.dto.RegisterRequest;
 import co.edu.sena.auth.model.User;
 import co.edu.sena.auth.repository.UserRepository;
@@ -32,7 +33,7 @@ public class AuthService {
      *
      * @throws ResponseStatusException 409 si el email ya existe, 400 si el rol es invalido
      */
-    public void register(RegisterRequest req) {
+    public ProfileResponse register(RegisterRequest req) {
         String email = req.email().trim().toLowerCase();
         if (repository.existsByEmail(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya esta registrado");
@@ -48,7 +49,7 @@ public class AuthService {
         user.setRole(role);
         user.setActive(true);
         try {
-            repository.save(user);
+            return ProfileResponse.from(repository.save(user));
         } catch (DuplicateKeyException e) {
             // Peticiones simultaneas: la restriccion unica de la BD tambien debe responder 409
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya esta registrado");
@@ -60,7 +61,7 @@ public class AuthService {
      *
      * @throws ResponseStatusException 401 si son incorrectas, 403 si el usuario esta inactivo
      */
-    public void login(LoginRequest req) {
+    public ProfileResponse login(LoginRequest req) {
         User user = repository.findByEmail(req.email().trim().toLowerCase())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales invalidas"));
         String storedPassword = user.getPassword();
@@ -85,5 +86,6 @@ public class AuthService {
                 throw new IllegalStateException("No se pudo actualizar la contrasena heredada");
             }
         }
+        return ProfileResponse.from(user);
     }
 }

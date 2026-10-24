@@ -6,7 +6,9 @@ import co.edu.sena.auth.dto.PurchaseResponse;
 import co.edu.sena.auth.service.PurchaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,7 +38,9 @@ public class PurchaseController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Comprar libros del carrito",
             description = "Registra la venta, descuenta el stock y vacia el carrito. No hay pasarela de pago: se asume aprobado.")
-    @ApiResponse(responseCode = "201", description = "Compra realizada")
+    @ApiResponse(responseCode = "201", description = "Compra realizada",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = PurchaseResponse.class)))
     @ApiResponse(responseCode = "400", description = "Datos invalidos o carrito vacio", content = @Content)
     @ApiResponse(responseCode = "403", description = "Usuario inactivo", content = @Content)
     @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content)
@@ -48,7 +52,9 @@ public class PurchaseController {
     /** GET /api/purchases - historial de compras del usuario. */
     @GetMapping
     @Operation(summary = "Ver historial de compras", description = "Compras del usuario, de la mas reciente a la mas antigua.")
-    @ApiResponse(responseCode = "200", description = "Historial (vacio si no ha comprado)")
+    @ApiResponse(responseCode = "200", description = "Historial (vacio si no ha comprado)",
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = PurchaseHistoryResponse.class))))
     @ApiResponse(responseCode = "400", description = "Email ausente o con formato invalido", content = @Content)
     @ApiResponse(responseCode = "403", description = "Usuario inactivo", content = @Content)
     @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content)

@@ -6,6 +6,7 @@ import co.edu.sena.auth.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,7 +32,9 @@ public class CartController {
     @PostMapping("/items")
     @Operation(summary = "Agregar libro al carrito",
             description = "Suma la cantidad si el libro ya estaba en el carrito y devuelve el carrito actualizado.")
-    @ApiResponse(responseCode = "200", description = "Libro agregado")
+    @ApiResponse(responseCode = "200", description = "Libro agregado",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CartResponse.class)))
     @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content)
     @ApiResponse(responseCode = "403", description = "Usuario inactivo", content = @Content)
     @ApiResponse(responseCode = "404", description = "Usuario o libro no encontrado", content = @Content)
@@ -43,7 +46,9 @@ public class CartController {
     /** GET /api/cart - consulta el carrito del usuario. */
     @GetMapping
     @Operation(summary = "Ver carrito")
-    @ApiResponse(responseCode = "200", description = "Carrito del usuario (items vacios si no tiene libros)")
+    @ApiResponse(responseCode = "200", description = "Carrito del usuario (items vacios si no tiene libros)",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = CartResponse.class)))
     @ApiResponse(responseCode = "400", description = "Email ausente o con formato invalido", content = @Content)
     @ApiResponse(responseCode = "403", description = "Usuario inactivo", content = @Content)
     @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content)

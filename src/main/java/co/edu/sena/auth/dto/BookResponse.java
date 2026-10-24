@@ -14,7 +14,7 @@ public record BookResponse(
         @Schema(example = "Cien anos de soledad") String title,
         @Schema(example = "Gabriel Garcia Marquez") String author,
         @Schema(example = "Novela") String category,
-        @Schema(example = "45000") BigDecimal price,
+        @Schema(example = "22") BigDecimal price,
         @Schema(example = "10") int stock) {
 
     /** Convierte la entidad {@link Book} en su representacion publica. */

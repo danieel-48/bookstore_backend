@@ -11,5 +11,5 @@ import java.util.List;
 @Schema(description = "Carrito de compras de un usuario")
 public record CartResponse(
         List<CartItemResponse> items,
-        @Schema(example = "90000") BigDecimal total) {
+        @Schema(example = "44") BigDecimal total) {
 }

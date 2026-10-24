@@ -12,5 +12,5 @@ public record PurchaseResponse(
         @Schema(example = "true") boolean success,
         @Schema(example = "Compra realizada") String message,
         @Schema(example = "15") Long saleId,
-        @Schema(example = "90000") BigDecimal total) {
+        @Schema(example = "44") BigDecimal total) {
 }

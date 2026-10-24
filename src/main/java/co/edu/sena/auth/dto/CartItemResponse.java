@@ -12,6 +12,6 @@ public record CartItemResponse(
         @Schema(example = "1") Long bookId,
         @Schema(example = "Cien anos de soledad") String title,
         @Schema(example = "2") int quantity,
-        @Schema(example = "45000") BigDecimal unitPrice,
-        @Schema(example = "90000") BigDecimal subtotal) {
+        @Schema(example = "22") BigDecimal unitPrice,
+        @Schema(example = "44") BigDecimal subtotal) {
 }

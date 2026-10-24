@@ -12,5 +12,5 @@ public record PurchaseItemResponse(
         @Schema(example = "1") Long bookId,
         @Schema(example = "Cien anos de soledad") String title,
         @Schema(example = "2") int quantity,
-        @Schema(example = "90000") BigDecimal total) {
+        @Schema(example = "44") BigDecimal total) {
 }

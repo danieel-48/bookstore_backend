@@ -13,6 +13,6 @@ import java.util.List;
 public record PurchaseHistoryResponse(
         @Schema(example = "15") Long saleId,
         LocalDateTime date,
-        @Schema(example = "90000") BigDecimal total,
+        @Schema(example = "44") BigDecimal total,
         List<PurchaseItemResponse> items) {
 }
