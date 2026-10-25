@@ -30,25 +30,58 @@ public class AuthController {
     /** POST /api/auth/register - crea un usuario y devuelve su perfil publico. */
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Registrar usuario",
-            description = "Crea una cuenta activa. Si no se envia role se asigna EMPLOYEE (valores: ADMIN o EMPLOYEE).")
-    @ApiResponse(responseCode = "201", description = "Usuario registrado",
+    @Operation(
+            summary = "Registrar usuario",
+            description = """
+                    ## Registrar usuario
+                    Descripción: registra un usuario nuevo en el sistema con rol EMPLOYEE o ADMIN (HU-01)
+                    Método y URL: POST /api/auth/register
+                    Body (JSON):
+                    {
+                      "name": "Ana Ariza",
+                      "email": "ana12345@test.com",
+                      "password": "123456",
+                      "role": "EMPLOYEE"
+                    }
+                    Respuestas:
+                    201 Created → usuario registrado exitosamente
+                    400 Bad Request → datos inválidos, rol inválido o contraseña menor a 6 caracteres
+                    409 Conflict → el correo ya se encuentra registrado
+                    """
+    )
+    @ApiResponse(responseCode = "201", description = "Usuario registrado exitosamente",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ProfileResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Datos invalidos o rol invalido", content = @Content)
-    @ApiResponse(responseCode = "409", description = "El email ya esta registrado", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Datos inválidos, rol inválido o contraseña menor a 6 caracteres", content = @Content)
+    @ApiResponse(responseCode = "409", description = "El correo ya se encuentra registrado", content = @Content)
     public ProfileResponse register(@Valid @RequestBody RegisterRequest request) {
         return service.register(request);
     }
 
     /** POST /api/auth/login - valida credenciales y devuelve el perfil publico del usuario. */
     @PostMapping("/login")
-    @Operation(summary = "Iniciar sesion",
-            description = "Valida correo y contrasena, y devuelve los datos publicos del usuario (nunca la contrasena).")
-    @ApiResponse(responseCode = "200", description = "Login exitoso",
+    @Operation(
+            summary = "Iniciar sesión",
+            description = """
+                    ## Iniciar sesión
+                    Descripción: valida credenciales y devuelve el perfil del usuario (HU-02)
+                    Método y URL: POST /api/auth/login
+                    Body (JSON):
+                    {
+                      "email": "ana12345@test.com",
+                      "password": "123456"
+                    }
+                    Respuestas:
+                    200 OK → login exitoso y datos del usuario
+                    400 Bad Request → datos inválidos o vacíos
+                    401 Unauthorized → credenciales incorrectas
+                    403 Forbidden → usuario inactivo
+                    """
+    )
+    @ApiResponse(responseCode = "200", description = "Login exitoso y datos del usuario",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ProfileResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Datos inválidos o vacíos", content = @Content)
     @ApiResponse(responseCode = "401", description = "Credenciales incorrectas", content = @Content)
     @ApiResponse(responseCode = "403", description = "Usuario inactivo", content = @Content)
     public ProfileResponse login(@Valid @RequestBody LoginRequest request) {

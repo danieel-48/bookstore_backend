@@ -33,11 +33,28 @@ public class SaleDetailController {
     /** POST /api/sale-details - agrega un libro a una venta. Responde 201. */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Agregar un detalle a una venta",
-            description = "Calcula el total con el precio del libro, descuenta el stock y suma el total a la venta.")
-    @ApiResponse(responseCode = "201", description = "Detalle creado",
+    @Operation(
+            summary = "Agregar detalle de venta",
+            description = """
+                    ## Agregar detalle de venta
+                    Descripción: agrega un libro y cantidad a una venta, descuenta stock y suma al total (HU-16)
+                    Método y URL: POST /api/sale-details
+                    Body (JSON):
+                    {
+                      "idSale": 15,
+                      "idBook": 7,
+                      "quantity": 2
+                    }
+                    Respuestas:
+                    201 Created → detalle agregado a la venta
+                    400 Bad Request → datos inválidos o cantidad menor o igual a 0
+                    404 Not Found → venta o libro no encontrado
+                    409 Conflict → stock insuficiente
+                    """
+    )
+    @ApiResponse(responseCode = "201", description = "Detalle agregado a la venta",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleDetailResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Datos inválidos o cantidad menor o igual a 0", content = @Content)
     @ApiResponse(responseCode = "404", description = "Venta o libro no encontrado", content = @Content)
     @ApiResponse(responseCode = "409", description = "Stock insuficiente", content = @Content)
     public SaleDetailResponse create(@Valid @RequestBody SaleDetailRequest request) {
@@ -46,8 +63,20 @@ public class SaleDetailController {
 
     /** GET /api/sale-details - lista todos los detalles de venta (o filtra por venta). */
     @GetMapping
-    @Operation(summary = "Listar detalles de venta", description = "Consulta todos los detalles de venta; filtro opcional por venta.")
-    @ApiResponse(responseCode = "200", description = "Lista de detalles",
+    @Operation(
+            summary = "Consultar detalles de venta",
+            description = """
+                    ## Consultar detalles de venta
+                    Descripción: consulta todos los detalles de venta con filtro opcional por venta (HU-17)
+                    Método y URL: GET /api/sale-details
+                    Filtro opcional: GET /api/sale-details?idSale=15
+                    Body (JSON):
+                    No aplica
+                    Respuestas:
+                    200 OK → lista de detalles de venta
+                    """
+    )
+    @ApiResponse(responseCode = "200", description = "Lista de detalles de venta",
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = SaleDetailResponse.class))))
     public List<SaleDetailResponse> list(
@@ -57,8 +86,20 @@ public class SaleDetailController {
 
     /** GET /api/sale-details/{id} - consulta un detalle. */
     @GetMapping("/{id}")
-    @Operation(summary = "Consultar un detalle de venta")
-    @ApiResponse(responseCode = "200", description = "Detalle encontrado",
+    @Operation(
+            summary = "Consultar un detalle de venta",
+            description = """
+                    ## Consultar un detalle de venta
+                    Descripción: consulta un detalle de venta por su identificador (HU-18)
+                    Método y URL: GET /api/sale-details/{id}
+                    Body (JSON):
+                    No aplica
+                    Respuestas:
+                    200 OK → detalle de venta encontrado
+                    404 Not Found → detalle no encontrado
+                    """
+    )
+    @ApiResponse(responseCode = "200", description = "Detalle de venta encontrado",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleDetailResponse.class)))
     @ApiResponse(responseCode = "404", description = "Detalle no encontrado", content = @Content)
     public SaleDetailResponse get(@PathVariable Long id) {

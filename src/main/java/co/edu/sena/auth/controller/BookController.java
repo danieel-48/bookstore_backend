@@ -34,22 +34,59 @@ public class BookController {
     /** POST /api/books - crea un libro en el catalogo. */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Registrar libro", description = "Crea un libro. Todos los campos son obligatorios: title, author, category, price y stock.")
-    @ApiResponse(responseCode = "201", description = "Libro creado",
+    @Operation(
+            summary = "Registrar libro",
+            description = """
+                    ## Registrar libro
+                    Descripción: registra un nuevo libro en el catálogo con todos los campos obligatorios (HU-06)
+                    Método y URL: POST /api/books
+                    Body (JSON):
+                    {
+                      "title": "Harry Potter",
+                      "author": "J.K Rowling",
+                      "category": "Fantasia",
+                      "price": 22.00,
+                      "stock": 20
+                    }
+                    Respuestas:
+                    201 Created → libro creado exitosamente
+                    400 Bad Request → campos vacíos o valores numéricos inválidos
+                    """
+    )
+    @ApiResponse(responseCode = "201", description = "Libro creado exitosamente",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = BookResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Campos vacíos o valores numéricos inválidos", content = @Content)
     public BookResponse create(@Valid @RequestBody BookRequest request) {
         return service.create(request);
     }
 
     /** PUT /api/books/{id} - reemplaza los datos editables de un libro. */
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar libro", description = "Reemplaza los datos del libro indicado. Todos los campos son obligatorios.")
-    @ApiResponse(responseCode = "200", description = "Libro actualizado",
+    @Operation(
+            summary = "Actualizar libro",
+            description = """
+                    ## Actualizar libro
+                    Descripción: reemplaza la información del libro indicado (HU-07)
+                    Método y URL: PUT /api/books/{id}
+                    Body (JSON):
+                    {
+                      "title": "Harry Potter",
+                      "author": "J.K Rowling",
+                      "category": "Fantasia",
+                      "price": 25.00,
+                      "stock": 18
+                    }
+                    Respuestas:
+                    200 OK → libro actualizado exitosamente
+                    400 Bad Request → datos inválidos
+                    404 Not Found → libro no encontrado
+                    """
+    )
+    @ApiResponse(responseCode = "200", description = "Libro actualizado exitosamente",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = BookResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
     @ApiResponse(responseCode = "404", description = "Libro no encontrado", content = @Content)
     public BookResponse update(
             @Parameter(description = "Id del libro", example = "1") @PathVariable("id") Long id,
@@ -59,19 +96,30 @@ public class BookController {
 
     /** GET /api/books - lista libros con filtros opcionales de genero y precio. */
     @GetMapping
-    @Operation(summary = "Listar y filtrar libros",
-            description = "Sin parametros devuelve todo el catalogo. Los filtros son opcionales y se pueden combinar. "
-                    + "El filtro por idioma no esta disponible porque la tabla books no tiene esa columna.")
-    @ApiResponse(responseCode = "200", description = "Lista de libros (puede estar vacia)",
+    @Operation(
+            summary = "Consultar y filtrar libros",
+            description = """
+                    ## Consulta todos los libros y filtros
+                    Descripción: consulta el catálogo completo de libros o filtra por género y precio (HU-08 / HU-09)
+                    Método y URL: GET /api/books
+                    Filtros opcionales: GET /api/books?category=Fantasia&minPrice=10&maxPrice=50
+                    Body (JSON):
+                    No aplica
+                    Respuestas:
+                    200 OK → lista de libros (catálogo completo o filtrado)
+                    400 Bad Request → precio mínimo mayor que el máximo
+                    """
+    )
+    @ApiResponse(responseCode = "200", description = "Lista con los libros del catálogo",
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = BookResponse.class))))
-    @ApiResponse(responseCode = "400", description = "minPrice mayor que maxPrice", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Precio mínimo mayor que el máximo", content = @Content)
     public List<BookResponse> list(
-            @Parameter(description = "Genero exacto", example = "Novela")
+            @Parameter(description = "Genero exacto", example = "Fantasia")
             @RequestParam(name = "category", required = false) String category,
-            @Parameter(description = "Precio minimo (inclusive)", example = "10000")
+            @Parameter(description = "Precio minimo (inclusive)", example = "10")
             @RequestParam(name = "minPrice", required = false) BigDecimal minPrice,
-            @Parameter(description = "Precio maximo (inclusive)", example = "50000")
+            @Parameter(description = "Precio maximo (inclusive)", example = "50")
             @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice) {
         return service.list(category, minPrice, maxPrice);
     }
