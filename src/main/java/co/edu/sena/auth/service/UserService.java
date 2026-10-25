@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -26,6 +27,11 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /** Lista todos los usuarios (sin contrasena). */
+    public List<ProfileResponse> list() {
+        return repository.findAll().stream().map(ProfileResponse::from).toList();
+    }
+
     /**
      * Devuelve el perfil del usuario con ese email.
      *
@@ -38,7 +44,7 @@ public class UserService {
     /**
      * Actualiza nombre y correo, y opcionalmente rol y contrasena.
      *
-     * @throws ResponseStatusException 400 si el rol no esta permitido,
+     * @throws ResponseStatusException 400 si el rol no esta permitido o la contrasena es invalida,
      *                                 404 si el usuario no existe,
      *                                 409 si el correo ya esta en uso
      */
@@ -50,6 +56,10 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "El email ya esta registrado");
         }
 
+        if (request.password() != null && request.password().trim().length() < 6) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La contraseña debe tener al menos 6 caracteres");
+        }
+
         String role = user.getRole();
         if (request.role() != null) {
             role = request.role().trim().toUpperCase(Locale.ROOT);
@@ -59,7 +69,7 @@ public class UserService {
         }
         String password = request.password() == null
                 ? user.getPassword()
-                : passwordEncoder.encode(request.password());
+                : passwordEncoder.encode(request.password().trim());
 
         try {
             int updated = repository.updateProfile(id, request.name().trim(), email, password, role);

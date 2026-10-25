@@ -44,9 +44,9 @@ public class SaleDetailController {
         return service.create(request);
     }
 
-    /** GET /api/sale-details - lista detalles, opcionalmente de una venta. */
+    /** GET /api/sale-details - lista todos los detalles de venta (o filtra por venta). */
     @GetMapping
-    @Operation(summary = "Listar detalles de venta", description = "Todos los detalles; filtro opcional por venta.")
+    @Operation(summary = "Listar detalles de venta", description = "Consulta todos los detalles de venta; filtro opcional por venta.")
     @ApiResponse(responseCode = "200", description = "Lista de detalles",
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = SaleDetailResponse.class))))

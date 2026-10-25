@@ -5,6 +5,7 @@ import co.edu.sena.auth.dto.UpdateProfileRequest;
 import co.edu.sena.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,12 +15,14 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Endpoints REST de usuarios bajo /api/users.
  */
 @RestController
 @RequestMapping("/api/users")
-@Tag(name = "Usuarios", description = "Consulta de perfil de usuario")
+@Tag(name = "Usuarios", description = "Consulta y actualizacion de usuarios")
 public class UserController {
 
     private final UserService service;
@@ -28,9 +31,33 @@ public class UserController {
         this.service = service;
     }
 
-    /** GET /api/users/profile - devuelve el perfil del usuario con ese email. */
+    /** GET /api/users - lista todos los usuarios. */
+    @GetMapping
+    @Operation(summary = "Listar usuarios", description = "Devuelve todos los usuarios (sin contrasena).")
+    @ApiResponse(responseCode = "200", description = "Lista de usuarios (puede estar vacia)",
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = ProfileResponse.class))))
+    public List<ProfileResponse> list() {
+        return service.list();
+    }
+
+    /** GET /api/users/{email} - devuelve el perfil del usuario con ese email en el path. */
+    @GetMapping("/{email:.+}")
+    @Operation(summary = "Consultar perfil por email", description = "Devuelve los datos basicos del usuario a partir del email en la ruta.")
+    @ApiResponse(responseCode = "200", description = "Perfil encontrado",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ProfileResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Email ausente o con formato invalido", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content)
+    public ProfileResponse getByEmail(
+            @Parameter(description = "Email del usuario", example = "ana12345@test.com")
+            @PathVariable("email") @NotBlank @Email String email) {
+        return service.getProfile(email);
+    }
+
+    /** GET /api/users/profile - devuelve el perfil del usuario con ese email por query param. */
     @GetMapping("/profile")
-    @Operation(summary = "Consultar perfil", description = "Devuelve los datos basicos del usuario (sin contrasena).")
+    @Operation(summary = "Consultar perfil por parametro", description = "Devuelve los datos basicos del usuario (sin contrasena).")
     @ApiResponse(responseCode = "200", description = "Perfil encontrado",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ProfileResponse.class)))
@@ -46,7 +73,7 @@ public class UserController {
     @PutMapping("/{id}")
     @Operation(summary = "Actualizar perfil",
             description = "Actualiza nombre y correo. Password y role son opcionales; si se omiten, se conservan. "
-                    + "La contrasena nueva se guarda con BCrypt y el rol acepta ADMIN o EMPLOYEE.")
+                    + "La contrasena nueva se guarda con BCrypt (minimo 6 caracteres) y el rol acepta ADMIN o EMPLOYEE.")
     @ApiResponse(responseCode = "200", description = "Perfil actualizado",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ProfileResponse.class)))

@@ -38,6 +38,11 @@ public class UserRepository {
         this.jdbc = jdbc;
     }
 
+    /** Lista todos los usuarios. */
+    public List<User> findAll() {
+        return jdbc.query("SELECT " + COLUMNS + " FROM users ORDER BY id_user", MAPPER);
+    }
+
     /** Busca un usuario por email. */
     public Optional<User> findByEmail(String email) {
         List<User> list = jdbc.query(

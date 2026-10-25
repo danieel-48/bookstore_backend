@@ -31,6 +31,6 @@ public class AuthApplication {
         return new OpenAPI().info(new Info()
                 .title("Bookstore API")
                 .version("1.0.0")
-                .description("API de usuarios, catalogo de libros, carrito y compras."));
+                .description("API de usuarios, catalogo de libros, clientes y ventas."));
     }
 }

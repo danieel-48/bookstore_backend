@@ -1,4 +1,6 @@
 C:\Users\User\Desktop\auth-api\src\main\java\co\edu\sena\auth\AuthApplication.java
+C:\Users\User\Desktop\auth-api\src\main\java\co\edu\sena\auth\config\CorsConfig.java
+C:\Users\User\Desktop\auth-api\src\main\java\co\edu\sena\auth\config\GlobalExceptionHandler.java
 C:\Users\User\Desktop\auth-api\src\main\java\co\edu\sena\auth\controller\AuthController.java
 C:\Users\User\Desktop\auth-api\src\main\java\co\edu\sena\auth\controller\BookController.java
 C:\Users\User\Desktop\auth-api\src\main\java\co\edu\sena\auth\controller\ClientController.java

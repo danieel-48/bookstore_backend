@@ -43,9 +43,9 @@ public class SaleController {
         return service.create(request);
     }
 
-    /** GET /api/sales - lista ventas con filtros opcionales. */
+    /** GET /api/sales - lista todas las ventas (con filtros opcionales de cliente y usuario). */
     @GetMapping
-    @Operation(summary = "Listar ventas", description = "Todas las ventas; filtros opcionales por cliente y usuario.")
+    @Operation(summary = "Consultar ventas", description = "Consulta todas las ventas; admite filtros opcionales por cliente y usuario.")
     @ApiResponse(responseCode = "200", description = "Lista de ventas",
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = SaleResponse.class))))

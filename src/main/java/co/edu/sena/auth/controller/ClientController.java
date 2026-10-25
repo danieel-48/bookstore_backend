@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/clients")
-@Tag(name = "Clientes", description = "Registro, consulta y actualizacion de clientes")
+@Tag(name = "Clientes", description = "Registro, listado y actualizacion de clientes")
 public class ClientController {
 
     private final ClientService service;
@@ -49,16 +49,6 @@ public class ClientController {
                     array = @ArraySchema(schema = @Schema(implementation = ClientResponse.class))))
     public List<ClientResponse> list() {
         return service.list();
-    }
-
-    /** GET /api/clients/{id} - consulta un cliente. */
-    @GetMapping("/{id}")
-    @Operation(summary = "Consultar un cliente")
-    @ApiResponse(responseCode = "200", description = "Cliente encontrado",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientResponse.class)))
-    @ApiResponse(responseCode = "404", description = "Cliente no encontrado", content = @Content)
-    public ClientResponse get(@PathVariable Long id) {
-        return service.get(id);
     }
 
     /** PUT /api/clients/{id} - actualiza un cliente. */

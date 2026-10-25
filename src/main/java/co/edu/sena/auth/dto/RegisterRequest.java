@@ -12,6 +12,6 @@ import jakarta.validation.constraints.Size;
 public record RegisterRequest(
         @JsonAlias("Name") @NotBlank @Size(max = 150) String name,
         @JsonAlias("Email") @NotBlank @Email @Size(max = 100) String email,
-        @JsonAlias("Password") @NotBlank @Size(min = 6, max = 72) String password,
+        @JsonAlias("Password") @NotBlank @Size(min = 6, max = 72, message = "La contraseña debe tener al menos 6 caracteres") String password,
         @JsonAlias("Role") String role) {
 }
