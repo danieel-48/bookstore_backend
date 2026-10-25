@@ -1,6 +1,7 @@
 package co.edu.sena.auth.controller;
 
 import co.edu.sena.auth.dto.BookResponse;
+import co.edu.sena.auth.dto.BookRequest;
 import co.edu.sena.auth.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -27,6 +30,32 @@ public class BookController {
 
     public BookController(BookService service) {
         this.service = service;
+    }
+
+    /** POST /api/books - crea un libro en el catalogo. */
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Registrar libro", description = "Crea un libro. Todos los campos son obligatorios: title, author, category, price y stock.")
+    @ApiResponse(responseCode = "201", description = "Libro creado",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = BookResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content)
+    public BookResponse create(@Valid @RequestBody BookRequest request) {
+        return service.create(request);
+    }
+
+    /** PUT /api/books/{id} - reemplaza los datos editables de un libro. */
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar libro", description = "Reemplaza los datos del libro indicado. Todos los campos son obligatorios.")
+    @ApiResponse(responseCode = "200", description = "Libro actualizado",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = BookResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Datos invalidos", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Libro no encontrado", content = @Content)
+    public BookResponse update(
+            @Parameter(description = "Id del libro", example = "1") @PathVariable("id") Long id,
+            @Valid @RequestBody BookRequest request) {
+        return service.update(id, request);
     }
 
     /** GET /api/books - lista libros con filtros opcionales de genero y precio. */

@@ -1,6 +1,8 @@
 package co.edu.sena.auth.service;
 
 import co.edu.sena.auth.dto.BookResponse;
+import co.edu.sena.auth.dto.BookRequest;
+import co.edu.sena.auth.model.Book;
 import co.edu.sena.auth.repository.BookRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -48,5 +50,35 @@ public class BookService {
         return repository.findById(id)
                 .map(BookResponse::from)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Libro no encontrado"));
+    }
+
+    /** Crea un libro y devuelve el registro con el id asignado por la base de datos. */
+    public BookResponse create(BookRequest request) {
+        return BookResponse.from(repository.save(toBook(request)));
+    }
+
+    /**
+     * Reemplaza los datos editables de un libro.
+     *
+     * @throws ResponseStatusException 404 si el libro no existe
+     */
+    public BookResponse update(Long id, BookRequest request) {
+        if (repository.findById(id).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Libro no encontrado");
+        }
+        Book book = toBook(request);
+        book.setId(id);
+        repository.update(id, book);
+        return getById(id);
+    }
+
+    private Book toBook(BookRequest request) {
+        Book book = new Book();
+        book.setTitle(request.title().trim());
+        book.setAuthor(request.author().trim());
+        book.setCategory(request.category().trim());
+        book.setPrice(request.price());
+        book.setStock(request.stock());
+        return book;
     }
 }

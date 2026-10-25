@@ -45,10 +45,29 @@ public class UserRepository {
         return list.stream().findFirst();
     }
 
+    /** Busca un usuario por id. */
+    public Optional<User> findById(Long id) {
+        return jdbc.query("SELECT " + COLUMNS + " FROM users WHERE id_user = ?", MAPPER, id)
+                .stream().findFirst();
+    }
+
     /** Indica si ya existe un usuario con ese email. */
     public boolean existsByEmail(String email) {
         Integer n = jdbc.queryForObject("SELECT COUNT(*) FROM users WHERE email = ?", Integer.class, email);
         return n != null && n > 0;
+    }
+
+    /** Indica si otro usuario distinto al id indicado ya tiene el correo. */
+    public boolean existsByEmailAndIdNot(String email, Long id) {
+        Integer n = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM users WHERE email = ? AND id_user <> ?", Integer.class, email, id);
+        return n != null && n > 0;
+    }
+
+    /** Actualiza los campos editables del perfil. */
+    public int updateProfile(Long id, String name, String email, String password, String role) {
+        return jdbc.update("UPDATE users SET name = ?, email = ?, password = ?, role = ? WHERE id_user = ?",
+                name, email, password, role, id);
     }
 
     /** Inserta un usuario y devuelve el mismo objeto con su id generado. */

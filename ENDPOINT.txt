@@ -1,0 +1,32 @@
+URL base: http://localhost:8080 · Documentación: http://localhost:8080/swagger-ui/index.html
+
+Recurso AUTENTICACIÓN
+POST /api/auth/register Body: {"name":"Ana Ariza","email":"ana12345@test.com","password":"123456","role":"EMPLOYEE"} → 201 {"id":12,"name":"Ana Ariza","email":"ana12345@test.com","role":"EMPLOYEE","active":true} · 400 · 409
+POST /api/auth/login Body: {"email":"ana12345@test.com","password":"123456"} → 200 {"id":12,"name":"Ana Ariza","email":"ana12345@test.com","role":"EMPLOYEE","active":true} · 400 · 401 · 403
+
+Recurso USUARIOS
+GET /api/users/profile?email=ana12345@test.com → 200 {"id":12,"name":"Ana Ariza","email":"ana12345@test.com","role":"EMPLOYEE","active":true} · 400 · 404
+PUT /api/users/12 Body: {"name":"Ana Ariza","email":"ana12345@test.com","password":"123456","role":"ADMIN"} (password y role son opcionales; role: ADMIN o EMPLOYEE) → 200 {"id":12,"name":"Ana Ariza","email":"ana12345@test.com","role":"ADMIN","active":true} · 400 · 404 · 409
+
+Recurso LIBROS
+POST /api/books Body (todos los campos obligatorios y no vacíos): {"title":"Harry Potter","author":"J.K Rowling","category":"Fantasia","price":22.00,"stock":20} → 201 {"id":7,"title":"Harry Potter","author":"J.K Rowling","category":"Fantasia","price":22.000000,"stock":20} · 400
+PUT /api/books/7 Body (todos los campos obligatorios y no vacíos): {"title":"Harry Potter","author":"J.K Rowling","category":"Fantasia","price":25.00,"stock":18} → 200 {"id":7,"title":"Harry Potter","author":"J.K Rowling","category":"Fantasia","price":25.000000,"stock":18} · 400 · 404
+GET /api/books?category=Fantasia&minPrice=10&maxPrice=50 → 200 [{"id":7,"title":"Harry Potter","author":"J.K Rowling","category":"Fantasia","price":22.000000,"stock":20}] · 400
+GET /api/books/search?q=harry → 200 [{"id":7,"title":"Harry Potter","author":"J.K Rowling","category":"Fantasia","price":22.000000,"stock":20}] · 400
+GET /api/books/7 → 200 {"id":7,"title":"Harry Potter","author":"J.K Rowling","category":"Fantasia","price":22.000000,"stock":20} · 404
+
+Recurso CLIENTES (solo name es obligatorio; idNumber, email y phone son opcionales; email e idNumber son únicos)
+POST /api/clients Body: {"idNumber":1012345678,"name":"Ana Ariza","email":"ana12345@test.com","phone":3001234567} → 201 {"idClient":2,"idNumber":1012345678,"name":"Ana Ariza","email":"ana12345@test.com","phone":3001234567} · 400 · 409
+GET /api/clients → 200 [{"idClient":2,"idNumber":1012345678,"name":"Ana Ariza","email":"ana12345@test.com","phone":3001234567}]
+GET /api/clients/2 → 200 {"idClient":2,"idNumber":1012345678,"name":"Ana Ariza","email":"ana12345@test.com","phone":3001234567} · 404
+PUT /api/clients/2 Body (reemplaza todos los campos): {"idNumber":1012345678,"name":"Ana Ariza","email":"ana12345@test.com","phone":3009876543} → 200 {"idClient":2,"idNumber":1012345678,"name":"Ana Ariza","email":"ana12345@test.com","phone":3009876543} · 400 · 404 · 409
+
+Recurso VENTAS (date e idUser son opcionales; el total inicia en 0 y se acumula con los detalles)
+POST /api/sales Body: {"date":"2026-10-25T01:40:00","idClient":2,"idUser":5} → 201 {"idSale":15,"date":"2026-10-25T01:40:00","total":0,"idClient":2,"idUser":5} · 400 · 404
+GET /api/sales?idClient=2&idUser=5 (filtros opcionales) → 200 [{"idSale":15,"date":"2026-10-25T01:40:00","total":44.000000,"idClient":2,"idUser":5}]
+GET /api/sales/15 → 200 {"idSale":15,"date":"2026-10-25T01:40:00","total":44.000000,"idClient":2,"idUser":5} · 404
+
+Recurso DETALLES DE VENTA (el total se calcula con el precio del libro, descuenta el stock y suma el total a la venta)
+POST /api/sale-details Body: {"idSale":15,"idBook":7,"quantity":2} → 201 {"idDetail":31,"idSale":15,"idBook":7,"quantity":2,"total":44.000000} · 400 · 404 · 409
+GET /api/sale-details?idSale=15 (filtro opcional) → 200 [{"idDetail":31,"idSale":15,"idBook":7,"quantity":2,"total":44.000000}]
+GET /api/sale-details/31 → 200 {"idDetail":31,"idSale":15,"idBook":7,"quantity":2,"total":44.000000} · 404

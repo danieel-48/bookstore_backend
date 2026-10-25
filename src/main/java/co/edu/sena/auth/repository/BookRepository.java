@@ -3,9 +3,13 @@ package co.edu.sena.auth.repository;
 import co.edu.sena.auth.model.Book;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -72,6 +76,34 @@ public class BookRepository {
     /** Busca un libro por id. */
     public Optional<Book> findById(Long id) {
         return jdbc.query(SELECT + " WHERE id_book = ?", MAPPER, id).stream().findFirst();
+    }
+
+    /** Inserta un libro y devuelve la entidad con su id generado. */
+    public Book save(Book book) {
+        KeyHolder keys = new GeneratedKeyHolder();
+        jdbc.update(connection -> {
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO books (title, author, category, price, stock) VALUES (?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, book.getTitle());
+            statement.setString(2, book.getAuthor());
+            statement.setString(3, book.getCategory());
+            statement.setBigDecimal(4, book.getPrice());
+            statement.setInt(5, book.getStock());
+            return statement;
+        }, keys);
+        if (keys.getKey() == null) {
+            throw new IllegalStateException("La base de datos no devolvio el id del libro creado");
+        }
+        book.setId(keys.getKey().longValue());
+        return book;
+    }
+
+    /** Actualiza todos los campos editables de un libro. */
+    public int update(Long id, Book book) {
+        return jdbc.update("UPDATE books SET title = ?, author = ?, category = ?, price = ?, stock = ? "
+                        + "WHERE id_book = ?",
+                book.getTitle(), book.getAuthor(), book.getCategory(), book.getPrice(), book.getStock(), id);
     }
 
     /**

@@ -1,6 +1,7 @@
 package co.edu.sena.auth.controller;
 
 import co.edu.sena.auth.dto.ProfileResponse;
+import co.edu.sena.auth.dto.UpdateProfileRequest;
 import co.edu.sena.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +40,22 @@ public class UserController {
             @Parameter(description = "Email del usuario", example = "ana12345@test.com")
             @RequestParam("email") @NotBlank @Email String email) {
         return service.getProfile(email);
+    }
+
+    /** PUT /api/users/{id} - actualiza el perfil y devuelve los datos publicos actualizados. */
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar perfil",
+            description = "Actualiza nombre y correo. Password y role son opcionales; si se omiten, se conservan. "
+                    + "La contrasena nueva se guarda con BCrypt y el rol acepta ADMIN o EMPLOYEE.")
+    @ApiResponse(responseCode = "200", description = "Perfil actualizado",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ProfileResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Datos invalidos o rol invalido", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content)
+    @ApiResponse(responseCode = "409", description = "El correo ya esta registrado", content = @Content)
+    public ProfileResponse updateProfile(
+            @Parameter(description = "Id del usuario", example = "1") @PathVariable("id") Long id,
+            @Valid @RequestBody UpdateProfileRequest request) {
+        return service.updateProfile(id, request);
     }
 }
