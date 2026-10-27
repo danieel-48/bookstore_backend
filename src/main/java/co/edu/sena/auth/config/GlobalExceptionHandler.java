@@ -20,11 +20,28 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .filter(msg -> msg != null && !msg.isBlank())
-                .findFirst()
-                .orElse("Datos invalidos");
+        FieldError fieldError = ex.getBindingResult().getFieldError();
+        String message;
+        if (fieldError != null) {
+            String field = fieldError.getField();
+            String defaultMessage = fieldError.getDefaultMessage();
+            if (defaultMessage != null && !defaultMessage.isBlank()) {
+                if (defaultMessage.equalsIgnoreCase("no debe estar vacío")
+                        || defaultMessage.equalsIgnoreCase("no debe estar vacio")
+                        || defaultMessage.equalsIgnoreCase("no debe ser nulo")
+                        || defaultMessage.equalsIgnoreCase("must not be blank")
+                        || defaultMessage.equalsIgnoreCase("must not be empty")
+                        || defaultMessage.equalsIgnoreCase("must not be null")) {
+                    message = "El campo '" + field + "' no debe estar vacío";
+                } else {
+                    message = defaultMessage;
+                }
+            } else {
+                message = "El campo '" + field + "' no debe estar vacío";
+            }
+        } else {
+            message = "Datos invalidos";
+        }
 
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());

@@ -37,7 +37,7 @@ public class SaleController {
             summary = "Registrar venta",
             description = """
                     ## Registrar venta
-                    Descripción: registra una venta con total inicial en 0 (HU-14)
+                    Descripción: registra una venta con todos los campos obligatorios: date, idClient e idUser (HU-14)
                     Método y URL: POST /api/sales
                     Body (JSON):
                     {
@@ -47,13 +47,13 @@ public class SaleController {
                     }
                     Respuestas:
                     201 Created → venta creada exitosamente
-                    400 Bad Request → datos inválidos
+                    400 Bad Request → campos vacíos o datos inválidos
                     404 Not Found → cliente o usuario no encontrado
                     """
     )
     @ApiResponse(responseCode = "201", description = "Venta creada exitosamente",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
+    @ApiResponse(responseCode = "400", description = "Campos vacíos o datos inválidos", content = @Content)
     @ApiResponse(responseCode = "404", description = "Cliente o usuario no encontrado", content = @Content)
     public SaleResponse create(@Valid @RequestBody SaleRequest request) {
         return service.create(request);

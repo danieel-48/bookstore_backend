@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -31,7 +30,7 @@ public class SaleService {
     }
 
     /**
-     * Crea una venta con total 0. Si no se envia fecha se usa la actual.
+     * Crea una venta con total 0. Todos los campos (date, idClient, idUser) son obligatorios.
      *
      * @throws ResponseStatusException 404 si el cliente o el usuario no existen
      */
@@ -39,11 +38,10 @@ public class SaleService {
         if (!clientRepository.existsById(request.idClient())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado");
         }
-        if (request.idUser() != null && userRepository.findById(request.idUser()).isEmpty()) {
+        if (userRepository.findById(request.idUser()).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado");
         }
-        LocalDateTime date = request.date() != null ? request.date() : LocalDateTime.now();
-        long id = saleRepository.createSale(date, request.idClient(), request.idUser());
+        long id = saleRepository.createSale(request.date(), request.idClient(), request.idUser());
         return toResponse(saleRepository.findById(id).orElseThrow());
     }
 

@@ -37,7 +37,7 @@ public class SaleDetailController {
             summary = "Agregar detalle de venta",
             description = """
                     ## Agregar detalle de venta
-                    Descripción: agrega un libro y cantidad a una venta, descuenta stock y suma al total (HU-16)
+                    Descripción: agrega un detalle a una venta con todos los campos obligatorios: idSale, idBook y quantity (HU-16)
                     Método y URL: POST /api/sale-details
                     Body (JSON):
                     {
@@ -47,7 +47,7 @@ public class SaleDetailController {
                     }
                     Respuestas:
                     201 Created → detalle agregado a la venta
-                    400 Bad Request → datos inválidos o cantidad menor o igual a 0
+                    400 Bad Request → campos vacíos, datos inválidos o cantidad menor o igual a 0
                     404 Not Found → venta o libro no encontrado
                     409 Conflict → stock insuficiente
                     """

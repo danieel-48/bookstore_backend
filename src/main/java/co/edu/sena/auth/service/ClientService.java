@@ -81,12 +81,12 @@ public class ClientService {
         return new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado");
     }
 
-    /** Convierte el request en entidad; un email vacio se guarda como nulo para no chocar con la restriccion unica. */
+    /** Convierte el request en entidad; todos los campos son obligatorios. */
     private Client toClient(ClientRequest r) {
         Client c = new Client();
         c.setIdNumber(r.idNumber());
         c.setName(r.name().trim());
-        c.setEmail(r.email() == null || r.email().isBlank() ? null : r.email().trim());
+        c.setEmail(r.email().trim());
         c.setPhone(r.phone());
         return c;
     }

@@ -10,8 +10,22 @@ import jakarta.validation.constraints.Size;
  * Si "role" es nulo se asigna EMPLOYEE (valor por defecto de la tabla).
  */
 public record RegisterRequest(
-        @JsonAlias("Name") @NotBlank @Size(max = 150) String name,
-        @JsonAlias("Email") @NotBlank @Email @Size(max = 100) String email,
-        @JsonAlias("Password") @NotBlank @Size(min = 6, max = 72, message = "La contraseña debe tener al menos 6 caracteres") String password,
-        @JsonAlias("Role") String role) {
+        @JsonAlias("Name")
+        @NotBlank(message = "El campo 'name' no debe estar vacío")
+        @Size(max = 150, message = "El campo 'name' no debe superar los 150 caracteres")
+        String name,
+
+        @JsonAlias("Email")
+        @NotBlank(message = "El campo 'email' no debe estar vacío")
+        @Email(message = "El campo 'email' debe tener un formato válido")
+        @Size(max = 100, message = "El campo 'email' no debe superar los 100 caracteres")
+        String email,
+
+        @JsonAlias("Password")
+        @NotBlank(message = "El campo 'password' no debe estar vacío")
+        @Size(min = 6, max = 72, message = "La contraseña debe tener al menos 6 caracteres")
+        String password,
+
+        @JsonAlias("Role")
+        String role) {
 }
