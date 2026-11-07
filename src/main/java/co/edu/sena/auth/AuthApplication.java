@@ -28,7 +28,7 @@ public class AuthApplication {
 
     /**
      * Carga variables desde el archivo .env hacia las System Properties,
-     * permitiendo que Spring Boot las resuelva en application.properties.
+     * permitiendo que Spring Boot las resuelva en application.properties sin hardcodear.
      */
     public static void loadDotenv() {
         File[] candidateFiles = new File[] {
@@ -52,8 +52,13 @@ public class AuthApplication {
                             if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
                                 val = val.substring(1, val.length() - 1);
                             }
-                            if ("DB_URL".equalsIgnoreCase(key) && val.startsWith("mysql://")) {
-                                val = "jdbc:" + val;
+                            if ("DB_URL".equalsIgnoreCase(key)) {
+                                if (val.startsWith("mysql://")) {
+                                    val = "jdbc:" + val;
+                                }
+                                if (!val.contains("?")) {
+                                    val = val + "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+                                }
                             }
                             if (System.getProperty(key) == null && System.getenv(key) == null) {
                                 System.setProperty(key, val);
@@ -64,6 +69,30 @@ public class AuthApplication {
                 } catch (IOException ignored) {
                 }
             }
+        }
+
+        // Si DB_URL no fue pasada de forma explicita pero si sus componentes, construirla dinamicamente
+        if (System.getProperty("DB_URL") == null && System.getenv("DB_URL") == null) {
+            String host = System.getProperty("DB_HOST", System.getenv().getOrDefault("DB_HOST", "localhost"));
+            String port = System.getProperty("DB_PORT", System.getenv().getOrDefault("DB_PORT", "3306"));
+            if (host.contains(":")) {
+                String[] parts = host.split(":", 2);
+                host = parts[0];
+                if (parts.length > 1 && !parts[1].isBlank()) {
+                    port = parts[1];
+                }
+            }
+            String name = System.getProperty("DB_NAME", System.getenv().getOrDefault("DB_NAME", "bookstore"));
+            String ssl = System.getProperty("DB_SSL", System.getenv().getOrDefault("DB_SSL", "false"));
+            System.setProperty("DB_URL", "jdbc:mysql://" + host + ":" + port + "/" + name + "?useSSL=" + ssl + "&serverTimezone=UTC&allowPublicKeyRetrieval=true");
+        }
+
+        if (System.getProperty("PORT") == null && System.getenv("PORT") == null) {
+            System.setProperty("PORT", "8080");
+        }
+
+        if (System.getProperty("FRONTEND_URL") == null && System.getenv("FRONTEND_URL") == null) {
+            System.setProperty("FRONTEND_URL", "http://localhost:5173,http://127.0.0.1:5173");
         }
     }
 
