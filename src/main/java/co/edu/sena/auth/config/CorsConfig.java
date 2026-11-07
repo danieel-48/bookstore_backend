@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Configuracion CORS: permite que el frontend consuma la API.
@@ -14,18 +15,29 @@ import java.util.Arrays;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Value("${app.cors.allowed-origins:http://localhost:5173,http://127.0.0.1:5173}")
+    @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        String[] origins = Arrays.stream(allowedOrigins.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toArray(String[]::new);
+        Set<String> origins = new LinkedHashSet<>();
+        for (String origin : allowedOrigins.split(",")) {
+            String o = origin.trim();
+            if (!o.isEmpty()) {
+                if (o.endsWith("/")) {
+                    o = o.substring(0, o.length() - 1);
+                }
+                origins.add(o);
+                if (o.startsWith("http://")) {
+                    origins.add(o.replaceFirst("http://", "https://"));
+                } else if (o.startsWith("https://")) {
+                    origins.add(o.replaceFirst("https://", "http://"));
+                }
+            }
+        }
 
         registry.addMapping("/**")
-                .allowedOrigins(origins)
+                .allowedOrigins(origins.toArray(String[]::new))
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
     }

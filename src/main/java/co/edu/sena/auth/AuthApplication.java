@@ -91,9 +91,6 @@ public class AuthApplication {
             System.setProperty("PORT", "8080");
         }
 
-        if (System.getProperty("FRONTEND_URL") == null && System.getenv("FRONTEND_URL") == null) {
-            System.setProperty("FRONTEND_URL", "http://localhost:5173,http://127.0.0.1:5173");
-        }
     }
 
     /** Codificador BCrypt usado para guardar y verificar contrasenas. */
