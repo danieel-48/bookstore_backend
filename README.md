@@ -3,7 +3,7 @@
 | POST | `/api/auth/register` | Registra un usuario |
 | POST | `/api/auth/login` | Inicia sesión |
 | GET | `/api/users` | Lista los usuarios |
-| GET | `/api/users/{email}` | Consulta el perfil de un usuario |
+| GET | `/api/users/profile?email=ana12345@test.com` | Consulta el perfil de un usuario |
 | PUT | `/api/users/{id}` | Actualiza nombre, correo y opcionalmente contraseña o rol |
 | POST | `/api/books` | Registra un libro |
 | PUT | `/api/books/{id}` | Actualiza la información de un libro |
@@ -16,5 +16,4 @@
 | POST | `/api/sales` | Registra una venta |
 | GET | `/api/sales/{id}` | Consulta una venta |
 | POST | `/api/sale-details` | Agrega un detalle (libro y cantidad) a una venta |
-| GET | `/api/sale-details` | Consulta los detalles de venta |
-| GET | `/api/sale-details/{id}` | Consulta un detalle de venta |
+| GET | `/api/sale-details` | Consulta todos los detalles de venta |

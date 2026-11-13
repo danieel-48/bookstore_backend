@@ -64,7 +64,7 @@ class SaleDetailControllerTest {
     void testListSaleDetails_Success() throws Exception {
         SaleDetailResponse response = new SaleDetailResponse(31L, 15L, 7L, 2, new BigDecimal("44.00"));
 
-        when(saleDetailService.list(null)).thenReturn(List.of(response));
+        when(saleDetailService.list()).thenReturn(List.of(response));
 
         mockMvc.perform(get("/api/sale-details"))
                 .andExpect(status().isOk())
@@ -73,15 +73,10 @@ class SaleDetailControllerTest {
     }
 
     @Test
-    void testGetSaleDetailById_Success() throws Exception {
-        SaleDetailResponse response = new SaleDetailResponse(31L, 15L, 7L, 2, new BigDecimal("44.00"));
-
-        when(saleDetailService.get(31L)).thenReturn(response);
-
+    void testGetSaleDetailById_NotFound() throws Exception {
         mockMvc.perform(get("/api/sale-details/31"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idDetail").value(31L))
-                .andExpect(jsonPath("$.total").value(44.00));
+                .andExpect(status().isNotFound());
     }
+
 }
 

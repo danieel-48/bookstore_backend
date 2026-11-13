@@ -119,12 +119,8 @@ public class SaleRepository {
                 DETAIL_MAPPER, detailId).stream().findFirst();
     }
 
-    /** Lista detalles; si saleId es nulo devuelve todos. */
-    public List<SaleDetail> findDetails(Long saleId) {
-        if (saleId == null) {
-            return jdbc.query("SELECT " + DETAIL_COLUMNS + " FROM sale_details ORDER BY id_detail", DETAIL_MAPPER);
-        }
-        return jdbc.query("SELECT " + DETAIL_COLUMNS + " FROM sale_details WHERE id_sale = ? ORDER BY id_detail",
-                DETAIL_MAPPER, saleId);
+    /** Lista todos los detalles de venta. */
+    public List<SaleDetail> findDetails() {
+        return jdbc.query("SELECT " + DETAIL_COLUMNS + " FROM sale_details ORDER BY id_detail", DETAIL_MAPPER);
     }
 }

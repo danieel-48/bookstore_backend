@@ -4,7 +4,6 @@ import co.edu.sena.auth.dto.SaleDetailRequest;
 import co.edu.sena.auth.dto.SaleDetailResponse;
 import co.edu.sena.auth.service.SaleDetailService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -61,15 +60,14 @@ public class SaleDetailController {
         return service.create(request);
     }
 
-    /** GET /api/sale-details - lista todos los detalles de venta (o filtra por venta). */
+    /** GET /api/sale-details - lista todos los detalles de venta. */
     @GetMapping
     @Operation(
             summary = "Consultar detalles de venta",
             description = """
                     ## Consultar detalles de venta
-                    Descripción: consulta todos los detalles de venta con filtro opcional por venta (HU-17)
+                    Descripción: consulta todos los detalles de venta (HU-17)
                     Método y URL: GET /api/sale-details
-                    Filtro opcional: GET /api/sale-details?idSale=15
                     Body (JSON):
                     No aplica
                     Respuestas:
@@ -79,30 +77,7 @@ public class SaleDetailController {
     @ApiResponse(responseCode = "200", description = "Lista de detalles de venta",
             content = @Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = SaleDetailResponse.class))))
-    public List<SaleDetailResponse> list(
-            @Parameter(description = "Id de la venta", example = "15") @RequestParam(required = false) Long idSale) {
-        return service.list(idSale);
-    }
-
-    /** GET /api/sale-details/{id} - consulta un detalle. */
-    @GetMapping("/{id}")
-    @Operation(
-            summary = "Consultar un detalle de venta",
-            description = """
-                    ## Consultar un detalle de venta
-                    Descripción: consulta un detalle de venta por su identificador (HU-18)
-                    Método y URL: GET /api/sale-details/{id}
-                    Body (JSON):
-                    No aplica
-                    Respuestas:
-                    200 OK → detalle de venta encontrado
-                    404 Not Found → detalle no encontrado
-                    """
-    )
-    @ApiResponse(responseCode = "200", description = "Detalle de venta encontrado",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleDetailResponse.class)))
-    @ApiResponse(responseCode = "404", description = "Detalle no encontrado", content = @Content)
-    public SaleDetailResponse get(@PathVariable Long id) {
-        return service.get(id);
+    public List<SaleDetailResponse> list() {
+        return service.list();
     }
 }

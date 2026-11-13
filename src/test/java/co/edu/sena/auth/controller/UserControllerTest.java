@@ -54,14 +54,9 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetUserByEmail_Success() throws Exception {
-        ProfileResponse user = new ProfileResponse(1L, "Ana Ariza", "ana12345@test.com", "EMPLOYEE", true);
-        when(userService.getProfile("ana12345@test.com")).thenReturn(user);
-
+    void testGetUserByEmailPath_MethodNotAllowed() throws Exception {
         mockMvc.perform(get("/api/users/ana12345@test.com"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.email").value("ana12345@test.com"));
+                .andExpect(status().isMethodNotAllowed());
     }
 
     @Test

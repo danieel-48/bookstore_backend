@@ -52,33 +52,6 @@ public class UserController {
         return service.list();
     }
 
-    /** GET /api/users/{email} - devuelve el perfil del usuario con ese email en el path. */
-    @GetMapping("/{email:.+}")
-    @Operation(
-            summary = "Consultar perfil por email",
-            description = """
-                    ## Consultar perfil por email
-                    Descripción: consulta el perfil de un usuario a partir de su correo en la ruta (HU-04)
-                    Método y URL: GET /api/users/{email}
-                    Body (JSON):
-                    No aplica
-                    Respuestas:
-                    200 OK → perfil de usuario encontrado
-                    400 Bad Request → email ausente o formato inválido
-                    404 Not Found → usuario no encontrado
-                    """
-    )
-    @ApiResponse(responseCode = "200", description = "Perfil de usuario encontrado",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ProfileResponse.class)))
-    @ApiResponse(responseCode = "400", description = "Email ausente o formato inválido", content = @Content)
-    @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content)
-    public ProfileResponse getByEmail(
-            @Parameter(description = "Email del usuario", example = "ana12345@test.com")
-            @PathVariable("email") @NotBlank @Email String email) {
-        return service.getProfile(email);
-    }
-
     /** GET /api/users/profile - devuelve el perfil del usuario con ese email por query param. */
     @GetMapping("/profile")
     @Operation(

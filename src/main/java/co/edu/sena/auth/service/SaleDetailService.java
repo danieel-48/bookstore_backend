@@ -51,15 +51,9 @@ public class SaleDetailService {
         return toResponse(saleRepository.findDetailById(id).orElseThrow());
     }
 
-    /** Lista detalles; si idSale es nulo devuelve todos. */
-    public List<SaleDetailResponse> list(Long idSale) {
-        return saleRepository.findDetails(idSale).stream().map(this::toResponse).toList();
-    }
-
-    /** @throws ResponseStatusException 404 si el detalle no existe */
-    public SaleDetailResponse get(Long id) {
-        return toResponse(saleRepository.findDetailById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Detalle no encontrado")));
+    /** Lista todos los detalles de venta. */
+    public List<SaleDetailResponse> list() {
+        return saleRepository.findDetails().stream().map(this::toResponse).toList();
     }
 
     private SaleDetailResponse toResponse(SaleDetail d) {
